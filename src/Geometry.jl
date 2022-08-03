@@ -199,12 +199,4 @@ function add_vacancy(R,vacant_site)
 end
 
 
-#n=2
-#m=2
-#g=get_geometry("triangular",n,m)
-#R,inter_vector=g.sites,g.inter_vector
-#println(R,inter_vector)
-#plot_R(R)
-
-
 
