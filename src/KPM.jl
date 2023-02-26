@@ -124,22 +124,20 @@ function dos_kpm(H,Es;E_max=10,N=100,kernel="Jackson",mode="matrix")
   return rhos
 end
 
-function get_dos_kpm(H::hamiltonian,Es;E_max=10,nk=50,N=100,kernel="Jackson",mode="matrix")
+function get_dos_kpm(H::hamiltonian,E;E_max=10,nk=50,N=100,kernel="Jackson",mode="matrix")
   a1=H.g.inter_vector.x
   a2=H.g.inter_vector.y
   b1=2*pi/(a1[2]*a2[1]-a1[1]*a2[2])*[-a2[2],a2[1]]
   b2=2*pi/(a2[2]*a1[1]-a2[1]*a1[2])*[-a1[2],a1[1]]
-  nE=size(Es)[1]
-  rhos=zeros(Complex,nE)
+  rho=0
   for i=1:nk
     for j=1:nk
       k=i/nk*b1+j/nk*b2
       Hk=get_Hk(H,k)
-      rhos+=dos_kpm(Hk,Es,E_max=E_max,N=N,kernel=kernel,mode=mode)
+      rho+=dos_kpm(Hk,E,E_max=E_max,N=N,kernel=kernel,mode=mode)
     end
   end
-  println(rhos)
-  return real(rhos)
+  return rho
 end
 
 function get_ldos_kpm(H::hamiltonian,E,ii;E_max=10,nk=50,N=100,kernel="Jackson",mode="matrix")

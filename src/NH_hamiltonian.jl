@@ -10,7 +10,7 @@ struct NH_hamiltonian_1D
     g::geometry_1D
 end
 
-function get_four_partite_chain(t,u;n=2,gamma=0) # n is number of supercells
+function get_four_partite_chain(t,u;n=2,gamma=0,t2=0) # n is number of supercells
   N=4*n
   g = get_geometry_1D(N)
   h_intra = zeros(Complex,(N,N))
@@ -22,12 +22,12 @@ function get_four_partite_chain(t,u;n=2,gamma=0) # n is number of supercells
 
     h_intra[4*i-3,4*i-2]=t+gamma
     h_intra[4*i-2,4*i-3]=t-gamma
-    h_intra[4*i-2,4*i-1]=t+gamma
-    h_intra[4*i-1,4*i-2]=t-gamma
+    h_intra[4*i-2,4*i-1]=t-t2+gamma
+    h_intra[4*i-1,4*i-2]=t-t2-gamma
     h_intra[4*i-1,4*i]=t+gamma
     h_intra[4*i,4*i-1]=t-gamma
-    h_intra[4*i,4*i+1]=t+gamma
-    h_intra[4*i+1,4*i]=t-gamma
+    h_intra[4*i,4*i+1]=t-t2+gamma
+    h_intra[4*i+1,4*i]=t-t2-gamma
   end
   h_intra[4*n-3,4*n-3]=+im*u*0
   h_intra[4*n-2,4*n-2]=-im*u
@@ -36,16 +36,16 @@ function get_four_partite_chain(t,u;n=2,gamma=0) # n is number of supercells
   
   h_intra[4*n-3,4*n-2]=t+gamma
   h_intra[4*n-2,4*n-3]=t-gamma
-  h_intra[4*n-2,4*n-1]=t+gamma
-  h_intra[4*n-1,4*n-2]=t-gamma
+  h_intra[4*n-2,4*n-1]=t-t2+gamma
+  h_intra[4*n-1,4*n-2]=t-t2-gamma
   h_intra[4*n-1,4*n]=t+gamma
   h_intra[4*n,4*n-1]=t-gamma
 
   h_tx=zeros(Complex,(N,N))
-  h_tx[N,1]=t
+  h_tx[N,1]=t-t2
 
   h_tmx=zeros(Complex,(N,N))
-  h_tmx[1,N]=t
+  h_tmx[1,N]=t-t2
 
   H=NH_hamiltonian_1D(h_intra,h_tx,h_tmx,g)
   return H

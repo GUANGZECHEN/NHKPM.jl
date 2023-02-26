@@ -50,19 +50,24 @@ function get_op_S(i,dof_sites)  # given dof on each site, create the S_i operato
   return Sp,Sm,Sz      
 end 
 
-function get_truncated_Haldane_chain(J,hz,N)
+function get_truncated_Haldane_chain(J,hz,N; AKLT=false)
   dim=3^(N-2)*2^2
   H=spzeros(dim,dim)
   dof_sites=ones(N)*3
   dof_sites[1]=2
   dof_sites[N]=2  
   
+  factor=0
+  if AKLT==true
+    factor=1
+  end
+  
   for i=1:N-1
     Sp,Sm,Sz=get_op_S(i,dof_sites)
     Sp_1,Sm_1,Sz_1=get_op_S(i+1,dof_sites)
     X=(Sp*Sm_1/2+Sm*Sp_1/2+Sz*Sz_1)
-    H+=J*X+J/3*X*X
-    if i==2 || i==3 || i==6 || i==7
+    H+=J*X+J/3*X*X*factor
+    if mod(i,2)==0
       H+=-im*hz*Sz
     end    
   end
@@ -113,18 +118,25 @@ function Si(i,N;S=1/2,mode="sparse_tensor")    # tensor form of Si, for spin cha
   return Sp,Sm,Sz  
 end
 
-function get_Haldane_chain(J,hz,N)
+function get_Haldane_chain(J,hz,N; theta=0)
   dim=3^N
   H=spzeros(dim,dim)
   for i=1:N-1
     Sp,Sm,Sz=Si(i,N,S=1)
     Sp_1,Sm_1,Sz_1=Si(i+1,N,S=1)
     X=(Sp*Sm_1/2+Sm*Sp_1/2+Sz*Sz_1)
-    H+=J*X+J/3*X*X
+    H+=J*cos(theta)*X+J*sin(theta)*X*X
     if i==2 || i==3 || i==6 || i==7
+    #Sx=(Sp+Sm)/2
+    #Sy=(Sp-Sm)/2*im
+    #Sx_1=(Sp_1+Sm_1)/2
+    #Sy_1=(Sp_1-Sm_1)/2*im
       H+=-im*hz*Sz
     end  
   end
+  
+  #Sp,Sm,Sz=Si(N,N,S=1)
+  #H+=-im*hz*Sz
   return H
 end
 
@@ -167,6 +179,88 @@ function Si_Sj(i,j,N;spin=1/2,mode="sparse_tensor")    # tensor form of Si*Sj, f
     end
   end
   return Mp,Mm,Mz
+end
+
+function Si_Sj_pp_mm_zz(i,j,N;spin=1/2,mode="sparse_tensor")    # tensor form of Si*Sj, for spin chain of length N; Mp=S+i*S+j, Mm=S-i*S-j, Mz=Szi*Szj
+  sp=[0 2;0 0]/2        # S+, divide by 2 because of spin-1/2
+  sm=[0 0;2 0]/2        # S-
+  sz=[1 0;0 -1]/2
+  id=[1 0;0 1]
+
+  if mode=="sparse_tensor"
+    sp=sparse(sp)
+    sm=sparse(sm)
+    sz=sparse(sz)
+    id=sparse(id)
+  end
+
+  if i==1
+    Mp=sp
+    Mm=sm
+    Mz=sz
+  else
+    Mp=id
+    Mm=id
+    Mz=id   
+  end
+
+  for k=2:N
+    if k==i
+      Mp=kron(Mp,sp)
+      Mm=kron(Mm,sm)
+      Mz=kron(Mz,sz)
+    elseif k==j
+      Mp=kron(Mp,sp)
+      Mm=kron(Mm,sm)
+      Mz=kron(Mz,sz)
+    else
+      Mp=kron(Mp,id)
+      Mm=kron(Mm,id)
+      Mz=kron(Mz,id)
+    end
+  end
+  return Mp,Mm,Mz
+end
+
+function Si_Sj_xyz(i,j,N;spin=1/2,mode="sparse_tensor")    # tensor form of Si*Sj, for spin chain of length N
+  sx=[0 1;1 0]/2        # Sx, divide by 2 because of spin-1/2
+  sy=[0 -im;im 0]/2        # Sy
+  sz=[1 0;0 -1]/2
+  id=[1 0;0 1]
+
+  if mode=="sparse_tensor"
+    sx=sparse(sx)
+    sy=sparse(sy)
+    sz=sparse(sz)
+    id=sparse(id)
+  end
+
+  if i==1
+    Mx=sx
+    My=sy
+    Mz=sz
+  else
+    Mx=id
+    My=id
+    Mz=id   
+  end
+
+  for k=2:N
+    if k==i
+      Mx=kron(Mx,sx)
+      My=kron(My,sy)
+      Mz=kron(Mz,sz)
+    elseif k==j
+      Mx=kron(Mx,sx)
+      My=kron(My,sy)
+      Mz=kron(Mz,sz)
+    else
+      Mx=kron(Mx,id)
+      My=kron(My,id)
+      Mz=kron(Mz,id)
+    end
+  end
+  return Mx,My,Mz
 end
 
 function get_generalized_SSH_spin_chain(J,B;N=10,mode="MPO",boundary="OBC",sites=0,boundary_factor=1)      # generalized dimerized spin chain, J and B are vectors; N is chain length; mode switch between MPO and Tensor representation.

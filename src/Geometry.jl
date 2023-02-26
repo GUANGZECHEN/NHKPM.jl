@@ -4,6 +4,7 @@ using Statistics
 
 using PyCall
 plt = pyimport("matplotlib.pyplot")
+np = pyimport("numpy")
 # all the functions here work in 2d
 
 struct unit_vector
@@ -40,6 +41,9 @@ function get_inter_vector(n,m,a1,a2)
 end
 
 function get_geometry(lattice,n,m)
+    a1=[1,0]
+    a2=[0,1]
+    R=geometry_simple(n,m,a1,a2)
     if lattice=="triangular"
         a1=[1,0]
         a2=[1/2,-sqrt(3)/2]
@@ -197,6 +201,19 @@ function add_vacancy(R,vacant_site)
     deleteat!(R,vacant_site)
     return R
 end
+
+function plot_DOS(Ex,Ey,rho)
+  plt.figure(figsize=(6,6),dpi=80)
+  sc1=plt.scatter(Exs,Eys,c=rho)   
+  plt.show()
+end
+
+#n=2
+#m=2
+#g=get_geometry("triangular",n,m)
+#R,inter_vector=g.sites,g.inter_vector
+#println(R,inter_vector)
+#plot_R(R)
 
 
 

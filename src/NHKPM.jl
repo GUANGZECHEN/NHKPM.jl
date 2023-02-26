@@ -32,7 +32,7 @@ function get_mu_n_NH_MPO(H,v_L,v,N::Int;maxdim=50,return_S=false)  # saves compu
   vn[2]=2*contract(H,vn[1],cutoff=1e-10,maxdim=maxdim)
 
   mu_n[1]=dot(v_L,vn[1])
-  println(get_S_ent(vn[1],Int(size(sites)[1]/2)))
+  #println(get_S_ent(vn[1],Int(size(sites)[1]/2)))
 
   for n=2:(N-1)
     x=2*n-1
@@ -40,13 +40,13 @@ function get_mu_n_NH_MPO(H,v_L,v,N::Int;maxdim=50,return_S=false)  # saves compu
     alpha[1]=2*contract(H_dag,alpha[2],cutoff=1e-10,maxdim=maxdim)-alpha[1]
     vn[1]=2*alpha[2]+2*contract(H_dag,vn[2],cutoff=1e-10,maxdim=maxdim)-vn[1]
         
-    alpha[2]=2*contract(H,alpha[1],mode=mode,maxdim=maxdim)-alpha[2]
-    vn[2]=2*contract(H,vn[1],mode=mode,maxdim=maxdim)-vn[2]
+    alpha[2]=2*contract(H,alpha[1],cutoff=1e-10,maxdim=maxdim)-alpha[2]
+    vn[2]=2*contract(H,vn[1],cutoff=1e-10,maxdim=maxdim)-vn[2]
 
     mu_n[n]=dot(v_L,vn[1])
     #println(get_S_ent(alpha[1],Int(size(sites)[1]/2)))
     #println(get_S_ent(alpha[2],Int(size(sites)[1]/2)))
-    println(get_S_ent(vn[1],Int(size(sites)[1]/2)))
+    #println(get_S_ent(vn[1],Int(size(sites)[1]/2)))
     #println(get_S_ent(vn[2],Int(size(sites)[1]/2)))
   end
 
@@ -113,6 +113,7 @@ function dos_kpm_NH(H,z;E_max=10,N=100,kernel="Jackson",mode="matrix")
   for i=1:dim
     rho+=ldos_kpm_NH(H,z,i,E_max=E_max,N=N,kernel=kernel,mode=mode)
   end
+  
   return rho
 end
 
@@ -139,6 +140,8 @@ function get_spec_kpm_NH(H,z,v1,v2;E_max=10,N=100,kernel="Jackson",mode="matrix"
 
   if kernel=="Jackson"
     gn=Jackson_kernel(2*N-1)
+  elseif kernel=="Dirichlet"
+    gn=ones(2*N-1)
   else
     gn=Lorentz_kernel(2*N-1)
   end
