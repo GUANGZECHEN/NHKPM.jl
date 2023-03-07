@@ -1,6 +1,6 @@
 # NHKPM
 
-A Julia library to compute spectral functions in non-hermitian (**NH**) interacting systems. The algorithm is based on kernel polynomial method (**KPM**) and matrix product states (MPS).
+A Julia library to compute spectral functions of non-hermitian (many-body) Hamiltonians. The algorithm is based on the non-Hermitian kernel polynomial method (**NHKPM**) \[Phys. Rev. Lett. 130, 100401\] and matrix product states (MPS).
 
 # Installation
 Download the repository, which is compatible with Julia 1.7
