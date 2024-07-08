@@ -31,5 +31,5 @@ Codes can be found in the examples folder
 ![Alt text](figs/Liouvillian.png?raw=true "Liouvillian_spec")
 
 ## Liouvillian gap
-![Alt text](figs/Liouvillian_gap.png?raw=true "Liouvillian_gap")
+![Alt text](figs/Liouvillian_gap.pdf?raw=true "Liouvillian_gap")
 
