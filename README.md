@@ -27,6 +27,9 @@ Codes can be found in the examples folder
 ## Manybody line gap topology
 ![Alt text](figs/manybody_topology.png?raw=true "topology")
 
-## Liouvillian
-![Alt text](figs/Liouvillian.png?raw=true "Liouvillian")
+## Liouvillian spectrum
+![Alt text](figs/Liouvillian.png?raw=true "Liouvillian_spec")
+
+## Liouvillian gap
+![Alt text](figs/Liouvillian_gap.png?raw=true "Liouvillian_gap")
 
